@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meccha Chameleon - Server Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ===== MECCA CHAMELEON BACKGROUND VIDEO LAYER ===== -->
+    <div id="yt-bg-wrapper" aria-hidden="true">
+        <div id="yt-bg-overlay"></div>
+        <div id="yt-bg-player"></div>
+    </div>
+
+    <div class="banner-container">
+        <img src="header.jpg" alt="Mecca Chameleon Logo Banner" class="banner-img">
+    </div>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">🦎 Find a Good Server</div>
+            <div class="nav-right">
+                <div class="nav-info">Global Matrix Synchronizer Active</div>
+                <button id="help-btn" class="btn-help-nav" aria-label="Help">? Help</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <aside class="panel host-panel">
+            <h2>🛠️ Host Control Panel</h2>
+            <p class="panel-subtitle">Manage your hosted lobby state below.</p>
+            
+            <form id="host-form">
+                <div class="form-group">
+                    <label>Your Steam Name (Host)</label>
+                    <input type="text" id="host-steam-name" value="Steam ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Server Gateway Region</label>
+                    <select id="host-region">
+                        <option value="Europe">🇪🇺 Europe (EU)</option>
+                        <option value="North America">🇺🇸 North America (NA)</option>
+                        <option value="Asia">🌏 Asia (AS)</option>
+                        <option value="South America">🇧🇷 South America (SA)</option>
+                        <option value="Oceania">🇦🇺 Oceania (OCE)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Max Players Allowed</label>
+                    <select id="host-max-players">
+                        <option value="2">2 Players (1v1 Duel)</option>
+                        <option value="4">4 Players</option>
+                        <option value="8">8 Players</option>
+                        <option value="12" selected>12 Players (Standard)</option>
+                        <option value="16">16 Players</option>
+                        <option value="24">24 Players (Chaos Mode!)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Server Status</label>
+                    <select id="host-status">
+                        <option value="Lobby">🟢 Recruiting in Lobby</option>
+                        <option value="In-Game">🔴 Match In-Progress</option>
+                        <option value="Full">🟡 Lobby Full</option>
+                    </select>
+                </div>
+                <div class="host-action-buttons">
+                    <button type="submit" class="btn btn-host">Publish / Update Server</button>
+                    <button type="button" id="btn-close-server" class="btn btn-close hidden">Shut Down Server</button>
+                </div>
+            </form>
+
+            <hr class="divider">
+
+            <h3>📨 Private Join Requests (<span id="request-count">0</span>)</h3>
+            <p class="panel-subtitle">Review player Steam IDs requesting entry.</p>
+            
+            <div id="host-requests-container">
+                <ul id="requests-list" class="requests-list">
+                    <li class="empty-requests">No pending requests</li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="panel main-panel">
+            <div class="panel-header-row">
+                <div>
+                    <h2>🌐 Active Server Finder</h2>
+                    <p class="panel-subtitle">Click on any server card to inspect active players and request to join.</p>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-region">Filter Region</label>
+                    <select id="filter-region">
+                        <option value="All">🌍 All Regions Combined</option>
+                        <option value="Europe">🇪🇺 Europe</option>
+                        <option value="North America">🇺🇸 North America</option>
+                        <option value="Asia">🌏 Asia</option>
+                        <option value="South America">🇧🇷 South America</option>
+                        <option value="Oceania">🇦🇺 Oceania</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="server-list" class="server-grid">
+                </div>
+        </main>
+    </div>
+
+    <div id="join-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal-btn">&times;</span>
+            <h2 id="modal-server-title">Lobby Details</h2>
+            <p id="modal-server-meta" class="panel-subtitle">Connecting...</p>
+            
+            <div class="modal-roster-box">
+                <h4>👥 Active Players (<span id="modal-roster-count">0</span>)</h4>
+                <ul id="modal-players-list" class="modal-players-list">
+                    </ul>
+            </div>
+
+            <div id="modal-action-wrapper">
+                <form id="join-request-form">
+                    <input type="hidden" id="modal-server-id">
+                    <div class="form-group">
+                        <label for="player-steam-id">Your Steam Display Name</label>
+                        <input type="text" id="player-steam-id" placeholder="e.g., HideNSeekPro_99" required>
+                    </div>
+                    <button type="submit" class="btn btn-host">Submit Slot Request to Host</button>
+                </form>
+            </div>
+            <p id="modal-locked-message" class="locked-warning hidden">⚠️ This lobby is currently closed or full.</p>
+        </div>
+    </div>
+
+    <!-- ===== HELP MODAL ===== -->
+    <div id="help-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+        <div class="modal-content modal-content--help">
+            <span class="close-modal" id="close-help-modal-btn" aria-label="Close help">&times;</span>
+            <h2 id="help-modal-title">🦎 Welcome to Mecca Chameleon Server!</h2>
+            <p class="help-intro">This dashboard is a middleman network to connect players directly with server hosts.</p>
+
+            <div class="help-section">
+                <h3>👤 For Players</h3>
+                <ul class="help-list">
+                    <li>Find an open listing and click <strong>"View Lobby"</strong>.</li>
+                    <li>Drop your exact <strong>Steam ID or Steam Name</strong> into the request box.</li>
+                    <li><strong>Keep that inspector window open</strong> — as soon as the host accepts you from their panel, your secure Steam connection link will unlock right there on your screen.</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h3>🛠️ For Hosts</h3>
+                <ul class="help-list">
+                    <li>Keep an eye on your dashboard.</li>
+                    <li>Hit <strong>Accept</strong> when names pop up.</li>
+                    <li>Invite those Steam profiles to your game.</li>
+                </ul>
+            </div>
+
+            <div class="help-vibe-box">
+                <h3>🎨 Most Importantly — The Vibe</h3>
+                <p>This space is strictly for <strong>intense, high-quality painting</strong> or just having a <strong>good night full of friendly laughs</strong>. It is absolutely <em>not</em> a place to just join, troll, and immediately leave.</p>
+                <p>Hosts have full control to drop anyone disrupting the match, so let's keep the gaming sessions solid.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOP SERVER HOST LEADERBOARD ===== -->
+    <section class="leaderboard-section">
+        <div class="leaderboard-inner panel">
+            <div class="leaderboard-header">
+                <h2>🏆 Top Server Hosts</h2>
+                <p class="panel-subtitle">Ranked by total players welcomed into lobbies over all time.</p>
+            </div>
+            <div id="leaderboard-list" class="leaderboard-list">
+                <div class="leaderboard-empty">No host data yet — be the first to fill a lobby!</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Meccha Chameleon Portal &copy; 2026 | Auto-Expiry System & Live Roster Verification Online</p>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+    <!-- YouTube IFrame API — loaded last so it never blocks the UI -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>
