@@ -4,7 +4,7 @@ import { getDatabase, ref, set, onValue, update, push, remove, runTransaction } 
 // ============================================================
 // MECCA CHAMELEON BACKGROUND CLIP PLAYLIST
 // ============================================================
-const CLIP_IDS = ["dQw4w9WgXcQ"]; // Add additional YouTube Video IDs here
+const CLIP_IDS = ["dQw4w9WgXcQ"]; 
 
 (function initBgVideo() {
     const wrapper = document.getElementById('yt-bg-wrapper');
@@ -104,12 +104,16 @@ const renderServerFinder = () => {
 
     filteredServers.forEach(server => {
         let statusClass = "status-lobby";
+        let cardModifierClass = "server-card-lobby";
         let displayStatus = "In Lobby";
+        
         if (server.status === "In-Game") {
             statusClass = "status-ingame"; 
+            cardModifierClass = "server-card-ingame";
             displayStatus = "In-Game";
         } else if (server.status === "Full" || server.currentPlayers >= server.maxPlayers) {
             statusClass = "status-full"; 
+            cardModifierClass = "server-card-full";
             displayStatus = "Full";
         }
 
@@ -119,7 +123,7 @@ const renderServerFinder = () => {
         const dislikeCount = server.dislikes || 0;
 
         const cardHTML = `
-            <div class="server-card" style="border-left-color: ${server.id === myServerId ? '#22c55e' : '#38bdf8'}" id="card-${server.id}">
+            <div class="server-card ${cardModifierClass}" style="border-left-color: ${server.id === myServerId ? '#22c55e' : ''}" id="card-${server.id}">
                 <div class="server-info">
                     <h3>${escapeHTML(server.host)}'s Hide &amp; Seek Lobby</h3>
                     <div class="server-meta">
@@ -241,12 +245,16 @@ onValue(ref(db, "servers"), (snapshot) => {
                 hostIncomingRequests = serverData.requests;
                 const nameInput = document.getElementById('host-steam-name');
                 const regionInput = document.getElementById('host-region');
+                const connectionInput = document.getElementById('host-connect-string');
                                  
                 if (nameInput && document.activeElement !== nameInput) {
                     nameInput.value = serverData.host || "";
                 }
                 if (regionInput && document.activeElement !== regionInput) {
                     regionInput.value = serverData.region || "Europe";
+                }
+                if (connectionInput && document.activeElement !== connectionInput) {
+                    connectionInput.value = serverData.connectionString || "";
                 }
             }
         });
@@ -417,6 +425,7 @@ if (document.getElementById('host-form')) {
         const selectedRegion = document.getElementById('host-region').value;
         const maxSlots = parseInt(document.getElementById('host-max-players').value);
         const hostState = document.getElementById('host-status').value;
+        const connectionLink = document.getElementById('host-connect-string').value.trim();
         
         const myCurrentServer = activeServers.find(s => s.id === myServerId);
         const existingPlayersCount = myCurrentServer ? myCurrentServer.currentPlayers : 1;
@@ -428,6 +437,7 @@ if (document.getElementById('host-form')) {
                 maxPlayers: maxSlots,
                 currentPlayers: existingPlayersCount > maxSlots ? maxSlots : existingPlayersCount,
                 status: hostState,
+                connectionString: connectionLink,
                 lastActive: Date.now()
             });
             await set(ref(db, `servers/${myServerId}/players/host_slot`), {

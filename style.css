@@ -9,9 +9,9 @@
     height: 100%;
     z-index: -1;
     overflow: hidden;
-    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #111827);
-    background-size: 400% 400%;
-    animation: auroraShimmer 18s ease infinite;
+    background: linear-gradient(-45deg, #070b12, #0f1123, #1a0b24, #0b0f19);
+    background-size: 300% 300%;
+    animation: auroraShimmer 12s ease infinite;
 }
 #yt-bg-overlay {
     position: absolute;
@@ -134,17 +134,18 @@ header {
 }
 
 /* ==========================================================================
-   3. LAYOUT GRID & PANELS
+   3. LAYOUT GRID & PANELS (FIXED ADAPTIVE GRID HOOKS)
    ========================================================================== */
 .container {
     max-width: 1200px;
     margin: 1.5rem auto;
     padding: 0 1.5rem;
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 1.8fr;
     gap: 2rem;
     flex: 1;
     width: 100%;
+    align-items: start;
 }
 @media (max-width: 900px) {
     .container { grid-template-columns: 1fr; }
@@ -211,7 +212,8 @@ input[type="text"]:focus, select:focus { outline: none; border-color: #22c55e !i
 .empty-requests { text-align: center; color: #64748b; font-style: italic; padding: 1rem 0; }
 
 .server-grid { display: flex; flex-direction: column; gap: 1rem; }
-.server-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid #38bdf8; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.server-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-left: 4px solid #38bdf8; border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.server-card:hover { transform: translateY(-2px); }
 .server-meta { display: flex; gap: 1.5rem; font-size: 0.85rem; color: #94a3b8; }
 .server-actions { display: flex; align-items: center; gap: 1.25rem; }
 .server-status-pill { padding: 0.35rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
@@ -219,6 +221,11 @@ input[type="text"]:focus, select:focus { outline: none; border-color: #22c55e !i
 .status-ingame { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 .status-full { background: rgba(234, 179, 8, 0.15); color: #facc15; }
 .btn-join { padding: 0.6rem 1.25rem; background: #38bdf8; color: #0f172a; border: none; border-radius: 6px; font-weight: 700; }
+
+/* Dynamic Status Accent States */
+.server-card-lobby { border-left: 4px solid #22c55e !important; box-shadow: 0 0 15px rgba(34, 197, 94, 0.15); }
+.server-card-ingame { border-left: 4px solid #ef4444 !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.15); }
+.server-card-full { border-left: 4px solid #eab308 !important; box-shadow: 0 0 15px rgba(234, 179, 8, 0.15); }
 
 /* ==========================================================================
    6. MODALS & LEADERBOARD

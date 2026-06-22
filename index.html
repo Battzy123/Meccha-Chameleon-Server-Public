@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ===== MECCA CHAMELEON BACKGROUND VIDEO LAYER ===== -->
     <div id="yt-bg-wrapper" aria-hidden="true">
         <div id="yt-bg-overlay"></div>
         <div id="yt-bg-player"></div>
@@ -36,6 +35,10 @@
                 <div class="form-group">
                     <label>Your Steam Name (Host)</label>
                     <input type="text" id="host-steam-name" value="Steam ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Server IP / Connection Link</label>
+                    <input type="text" id="host-connect-string" placeholder="e.g., steam://connect/192.168.1.100:27015" required>
                 </div>
                 <div class="form-group">
                     <label>Server Gateway Region</label>
@@ -103,8 +106,7 @@
                 </div>
             </div>
 
-            <div id="server-list" class="server-grid">
-                </div>
+            <div id="server-list" class="server-grid"></div>
         </main>
     </div>
 
@@ -116,8 +118,7 @@
             
             <div class="modal-roster-box">
                 <h4>👥 Active Players (<span id="modal-roster-count">0</span>)</h4>
-                <ul id="modal-players-list" class="modal-players-list">
-                    </ul>
+                <ul id="modal-players-list" class="modal-players-list"></ul>
             </div>
 
             <div id="modal-action-wrapper">
@@ -134,7 +135,6 @@
         </div>
     </div>
 
-    <!-- ===== HELP MODAL ===== -->
     <div id="help-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
         <div class="modal-content modal-content--help">
             <span class="close-modal" id="close-help-modal-btn" aria-label="Close help">&times;</span>
@@ -167,7 +167,6 @@
         </div>
     </div>
 
-    <!-- ===== TOP SERVER HOST LEADERBOARD ===== -->
     <section class="leaderboard-section">
         <div class="leaderboard-inner panel">
             <div class="leaderboard-header">
@@ -185,7 +184,6 @@
     </footer>
 
     <script type="module" src="script.js"></script>
-    <!-- YouTube IFrame API — loaded last so it never blocks the UI -->
     <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
