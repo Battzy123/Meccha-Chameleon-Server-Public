@@ -5,19 +5,174 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mecca Chameleon Servers</title>
     <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.youtube.com/iframe_api" defer></script>
+    
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script defer src="script.js"></script>
+    <script type="module" src="script.js" defer></script>
 </head>
 <body>
+
+    <div id="yt-bg-wrapper" class="video-background-container">
+        <div id="yt-bg-player"></div>
+        <div class="video-overlay-tint"></div>
+    </div>
 
     <header>
         <div class="logo-container">
             <h1>Mecca Chameleon</h1>
             <span class="status-badge live">Server Portal</span>
         </div>
-        <nav>
+        <nav style="display: flex; align-items: center; gap: 15px;">
+            <button id="help-btn" class="secondary-btn" style="padding: 10px 15px; font-size: 0.9rem;">Help Guide</button>
             <a href="https://discord.gg/WXvQacwhnu" target="_blank" class="discord-btn">
                 <svg class="discord-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36">
-                    <path fill="currentColor" d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a74.37,74.37,0,0,0,6.73-10.93,68.6,68.6,0,0,1-10.64-5.12c.91-.67,1.81-1.37,2.67-2.1a75.5,75.5,0,0,0,72.7,0c.87.73,1.76,1.43,2.67,2.1a68.86,68.86,0,0,1-10.64,5.12,74.74,74.74,0,0,0,6.73,10.93,105.54,105.54,0,0
+                    <path fill="currentColor" d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a74.37,74.37,0,0,0,6.73-10.93,68.6,68.6,0,0,1-10.64-5.12c.91-.67,1.81-1.37,2.67-2.1a75.5,75.5,0,0,0,72.7,0c.87.73,1.76,1.43,2.67,2.1a68.86,68.86,0,0,1-10.64,5.12,74.74,74.74,0,0,0,6.73,10.93,105.54,105.54,0,0,0,31.6-18.83C129.5,49.12,123.11,26.4,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
+                </svg>
+                Join our Discord
+            </a>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        
+        <section class="control-panel card">
+            <h2>Host Control Panel</h2>
+            <p class="panel-subtitle">Manage and broadcast your active matchmaking lobby status.</p>
+            <hr>
+            
+            <form id="host-form">
+                <div class="input-group">
+                    <label for="host-steam-name">Host Alias Name</label>
+                    <input type="text" id="host-steam-name" placeholder="e.g., O'Shea" required>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="host-max-players">Max Players Limit</label>
+                        <select id="host-max-players">
+                            <option value="2">2 Players</option>
+                            <option value="4">4 Players</option>
+                            <option value="8">8 Players</option>
+                            <option value="16" selected>16 Players</option>
+                            <option value="24">24 Players</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="host-region">Server Region Zone</label>
+                        <select id="host-region">
+                            <option value="Europe" selected>Europe</option>
+                            <option value="North America">North America</option>
+                            <option value="South America">South America</option>
+                            <option value="Asia">Asia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="host-status">Current Session Status</label>
+                    <select id="host-status">
+                        <option value="Lobby" selected>Lobby (Accepting Requests)</option>
+                        <option value="In-Game">In-Game (Match Started)</option>
+                        <option value="Full">Full (Roster Locked)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="host-connect-string">Steam Connect Invite Connection URL</label>
+                    <input type="text" id="host-connect-string" placeholder="steam://joinlobby/...">
+                </div>
+
+                <button type="submit" id="broadcast-btn" class="primary-btn">Update Live Broadcast</button>
+                <button type="button" id="btn-close-server" class="secondary-btn hidden" style="width: 100%; margin-top: 12px; border-color: #e74c3c; color: #e74c3c;">Shut Down Active Lobby</button>
+            </form>
+
+            <hr>
+            <div class="panel-header">
+                <h3>Inbound Player Inquiries</h3>
+                <span id="request-count" class="counter">0</span>
+            </div>
+            <ul id="requests-list" style="list-style: none; margin-top: 15px;">
+                <li class="empty-requests">No pending requests</li>
+            </ul>
+        </section>
+
+        <div style="display: flex; flex-direction: column; gap: 30px;">
+            <section class="browser-panel card">
+                <div class="panel-header">
+                    <h2>Active Live Lobby Browser</h2>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label for="filter-region" style="margin: 0; white-space: nowrap;">Region Grid:</label>
+                        <select id="filter-region" style="width: auto; padding: 6px 12px;">
+                            <option value="All" selected>All Regions</option>
+                            <option value="Europe">Europe</option>
+                            <option value="North America">North America</option>
+                            <option value="South America">South America</option>
+                            <option value="Asia">Asia</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="panel-subtitle">Inspect runtime active rosters and tap configurations to query connection keys.</p>
+                <hr>
+
+                <div id="server-list" class="grid-container">
+                    <div class="empty-state">
+                        <p>No live game servers running at this time.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>All-Time Top Hosts Leaderboard</h2>
+                <p class="panel-subtitle">Ranked by total historical community volume hosted.</p>
+                <hr>
+                <div id="leaderboard-list" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="leaderboard-empty">No host data yet — be the first to fill a lobby!</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="join-modal" class="modal-overlay hidden">
+        <div class="modal-content card">
+            <h3 id="modal-server-title">Session Details</h3>
+            <p id="modal-server-meta" class="panel-subtitle"></p>
+            <hr>
+            
+            <h4>Current Active Roster (<span id="modal-roster-count">0</span>)</h4>
+            <ul id="modal-players-list" style="margin: 15px 0; padding-left: 20px; color: #a4b0be;"></ul>
+            
+            <div id="modal-action-wrapper">
+                <form id="join-request-form">
+                    <input type="hidden" id="modal-server-id">
+                    <div class="input-group">
+                        <label for="player-steam-id">Your Community Username / Player ID</label>
+                        <input type="text" id="player-steam-id" placeholder="Enter identity placeholder" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="close-modal-btn" class="secondary-btn">Close</button>
+                        <button type="submit" class="primary-btn">Request Invitation</button>
+                    </div>
+                </form>
+            </div>
+            <div id="modal-locked-message" class="hidden" style="text-align: center; color: #e74c3c; padding: 10px; font-weight: 600;">
+                This session configuration is currently locked, full, or in-game.
+            </div>
+        </div>
+    </div>
+
+    <div id="help-modal" class="modal-overlay hidden">
+        <div class="modal-content card" style="max-width: 550px;">
+            <h3>Server Portal Guide</h3>
+            <hr>
+            <p style="margin-bottom: 12px;"><strong>Hosting:</strong> Enter your identifier, update your limits and status profile, and link your deep-link steam protocol address to register on the tracker.</p>
+            <p style="margin-bottom: 20px;"><strong>Joining:</strong> Locate an open room card item listing, tap 'View', provide your tag ID, and expect real-time host feedback authorization loop approval keys.</p>
+            <button type="button" id="close-help-modal-btn" class="primary-btn">Understood</button>
+        </div>
+    </div>
+
+</body>
+</html>
