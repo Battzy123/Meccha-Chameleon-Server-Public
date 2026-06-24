@@ -33,7 +33,7 @@ const CLIP_IDS = ["dQw4w9WgXcQ"];
                 onReady(event) {
                     event.target.mute();
                     event.target.playVideo();
-                    wrapper.classList.remove('video-loading');
+                    if(wrapper) wrapper.classList.remove('video-loading');
                 },
                 onStateChange(event) {
                     if (event.data === YT.PlayerState.ENDED && CLIP_IDS.length > 1) {
@@ -104,16 +104,13 @@ const renderServerFinder = () => {
 
     filteredServers.forEach(server => {
         let statusClass = "status-lobby";
-        let cardModifierClass = "server-card-lobby";
         let displayStatus = "In Lobby";
         
         if (server.status === "In-Game") {
             statusClass = "status-ingame"; 
-            cardModifierClass = "server-card-ingame";
             displayStatus = "In-Game";
         } else if (server.status === "Full" || server.currentPlayers >= server.maxPlayers) {
             statusClass = "status-full"; 
-            cardModifierClass = "server-card-full";
             displayStatus = "Full";
         }
 
@@ -123,7 +120,7 @@ const renderServerFinder = () => {
         const dislikeCount = server.dislikes || 0;
 
         const cardHTML = `
-            <div class="server-card ${cardModifierClass}" style="border-left-color: ${server.id === myServerId ? '#22c55e' : ''}" id="card-${server.id}">
+            <div class="server-card" style="border-left-color: ${server.id === myServerId ? '#22c55e' : ''}" id="card-${server.id}">
                 <div class="server-info">
                     <h3>${escapeHTML(server.host)}'s Hide &amp; Seek Lobby</h3>
                     <div class="server-meta">
@@ -350,12 +347,18 @@ function updateModalDisplay(serverId) {
         currentOpenServerId = null;
         return;
     }
-    document.getElementById('modal-server-id').value = serverId;
-    document.getElementById('modal-server-title').innerText = `${escapeHTML(targetServer.host)}'s Hide & Seek`;
-    document.getElementById('modal-server-meta').innerText = `Region: ${targetServer.region} | Status: ${targetServer.status}`;
+    const idField = document.getElementById('modal-server-id');
+    const titleField = document.getElementById('modal-server-title');
+    const metaField = document.getElementById('modal-server-meta');
+    
+    if (idField) idField.value = serverId;
+    if (titleField) titleField.innerText = `${escapeHTML(targetServer.host)}'s Hide & Seek`;
+    if (metaField) metaField.innerText = `Region: ${targetServer.region} | Status: ${targetServer.status}`;
     
     const rosterList = document.getElementById('modal-players-list');
     const rosterCount = document.getElementById('modal-roster-count');
+    if (!rosterList || !rosterCount) return;
+    
     rosterList.innerHTML = "";
     
     const activePlayersArray = targetServer.players || [];
@@ -364,10 +367,11 @@ function updateModalDisplay(serverId) {
     activePlayersArray.forEach(player => {
         const li = document.createElement('li');
         li.className = "modal-player-item";
+        li.style.padding = "5px 0";
         if (player.id === 'host_slot' || player.steamId.includes('(Host)')) {
-            li.innerHTML = `<strong style="color: #22c55e;">${escapeHTML(player.steamId)}</strong> <span class="host-tag">Host</span>`;
+            li.innerHTML = `<strong style="color: #22c55e;">${escapeHTML(player.steamId)}</strong> <span class="server-status-pill status-lobby" style="margin-left:5px; font-size:0.7rem;">Host</span>`;
         } else {
-            li.innerHTML = `${escapeHTML(player.steamId)}`;
+            li.innerHTML = `👤 ${escapeHTML(player.steamId)}`;
         }
         rosterList.appendChild(li);
     });
